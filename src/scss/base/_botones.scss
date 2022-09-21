@@ -9,3 +9,12 @@
 .boton-azulfuerte {
     @include boton($azulFuerte, inline-block);
 }
+
+.boton-rojo-block {
+    @include boton($naranja, block);
+}
+
+.boton-verde-block {
+    @include boton($verde, block);
+}
+
