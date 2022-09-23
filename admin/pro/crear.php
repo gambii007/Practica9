@@ -7,11 +7,6 @@
     //Consultar para obtener los vendedores
     $consulta = "SELECT * FROM vendedores";
     $resultado = mysqli_query($db, $consulta);
-    $propiedad = mysqli_fetch_assoc($resultado);
-    echo "<pre>";
-    var_dump($propiedad);
-    echo "</pre>";
-    exit;
 
     //Arreglar errores
     $errores = [];
@@ -39,7 +34,7 @@
         $habitaciones = mysqli_real_escape_string($db,$_POST['habitaciones'] );
         $wc = mysqli_real_escape_string($db,$_POST['wc']);
         $estacionamiento = mysqli_real_escape_string($db,$_POST['estacionamiento']);
-        $vendedorId = mysqli_real_escape_string($db,$_POST['vendedores_Id'] );
+        $vendedorId = mysqli_real_escape_string($db,$_POST['vendedorId'] );
         $creado = date('Y/m/d');
 
         //Asignar files hacia una variable
@@ -165,13 +160,11 @@
             <fieldset>
                 <legend>Vendedor</legend>
                 
-                <select name="vendedor">
-                    <option value=""> --Seleccione-- </option>
+                <select name="vendedorId">
+                    <option value="">--Seleccione un Vendedor</option>
                     <?php while ($vendedor = mysqli_fetch_assoc($resultado)) : ?>
-                        <option <?php echo $vendedorId === $vendedor['id'] ? 'selected' : ''; ?> value="<?php echo $vendedor['id']; ?> ">
-                            <?php echo $vendedor['nombre'] . " " . $vendedor['apellido']; ?>
-                        </option>
-                    <?php endwhile; ?>
+                        <option <?php echo $vendedorId === $vendedor['id'] ? 'selected' : ''; ?> value="<?php echo $vendedor['id']; ?>"><?php echo $vendedor['nombre'] . " " . $vendedor['apellido']; ?> </option>
+                    <?php endwhile ?>
                 </select>
             </fieldset>
 
