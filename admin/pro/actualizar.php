@@ -33,13 +33,17 @@
     //Ejecutar el codigo despues de que el usuario envia el formulario
     if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
+        // echo "<pre>";
+        // var_dump($_POST);
+        // echo "</pre>";        
+
         $titulo = mysqli_real_escape_string($db,$_POST['titulo'] );
         $precio = mysqli_real_escape_string($db,$_POST['precio'] );
         $descripcion = mysqli_real_escape_string($db,$_POST['descripcion'] );
         $habitaciones = mysqli_real_escape_string($db,$_POST['habitaciones'] );
         $wc = mysqli_real_escape_string($db,$_POST['wc']);
         $estacionamiento = mysqli_real_escape_string($db,$_POST['estacionamiento']);
-        $vendedorId = mysqli_real_escape_string($db,$_POST['vendedores_id'] );
+        $vendedorId = mysqli_real_escape_string($db,$_POST['vendedor'] );
         $creado = date('Y/m/d');
 
         //Asignar files hacia una variable
@@ -75,10 +79,6 @@
             $errores[] = "Elije un vendedor";
         }
 
-        if (!$imagen['name']) {
-            $errores[] = 'La imagen es Obligatoria';
-        }
-
         //Validar por tamaño(1M maximo)
         $medida = 1000 * 1000;
         
@@ -87,7 +87,7 @@
         }
 
         //Revisar que no tenga errores el formulario
-        if (empty($errores)) {    
+        if (empty($errores)) {
 
             /**Subida de archivos */
             //Crear carpeta
@@ -97,22 +97,32 @@
                 mkdir($carpetaImagenes);    
             }
 
-            //Generar un nombre unico y generar el nuevo destino
-            $nombreImagen = uniqid(rand(), true) . ".jpg";
+            $nombreImagen = '';
 
-            //Subir la imagen
-            move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
+            if ($imagen['name']) {
+                unlink($carpetaImagenes . $propiedad['imagen']);
+
+                //Generar un nombre unico y generar el nuevo destino
+                $nombreImagen = uniqid(rand(), true) . ".jpg";
+
+                //Subir la imagen
+                move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
+            }else{
+                $nombreImagen = $propiedad['imagen'];
+            }
+
+            
 
             //Insertar en la base de datos
-            $query = "INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_Id) VALUES ('$titulo', '$precio', '$nombreImagen', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId')";
+            $query = " UPDATE propiedades SET titulo = '${titulo}', precio = '${precio}', imagen = '${nombreImagen}', descripcion = '${descripcion}', habitaciones = ${habitaciones}, wc = ${wc}, estacionamiento = ${estacionamiento}, vendedores_id = ${vendedorId} WHERE id = ${id} ";
 
             //echo $query;
+
             $resultado = mysqli_query($db, $query);
 
             if ($resultado) {
                 //Redireccionar
-
-                header('Location: /admin?resultado=1');
+                header('Location: /admin?resultado=2');
             }
         }
     }
@@ -132,7 +142,7 @@
             </div>
         <?php endforeach; ?>
 
-        <form class="formulario" method="POST" action="/admin/pro/crear.php" enctype="multipart/form-data">
+        <form class="formulario" method="POST" enctype="multipart/form-data">
             <fieldset>
                 <legend>Información General</legend>
 
