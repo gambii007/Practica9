@@ -16,6 +16,11 @@
 
     //Obtener Resultado
     $resultado = mysqli_query($db, $query);
+
+    if(!$resultado->num_rows){
+        header('Location: /');
+    }
+
     $propiedades = mysqli_fetch_assoc($resultado);
 
     require 'includes/funciones.php';
